@@ -1,26 +1,16 @@
-#include <studio.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 
 void swap( int arr[] ,int i ,int j){
     int temp = arr[j];
     arr[j] =arr[i];
-    arr[j] =temp
+    arr[j] =temp;
 }
 
-void bitonic_sort(int a[] , int low ,int count  ,int dir){
 
-    if(n>1){
-        k =count/2;
-        bitonic_sort(a , low ,k ,1);
-        bitonic_sort(a ,low+k ,k ,0);
 
-        bitonic_marge(a ,low ,count ,dir);
-    }
-    return
-}
-
-void bitoninc+murge (a[] , int low ,int count ,int dir ){
+void bitonic_marge(int a[] , int low ,int count ,int dir ){
 
     if(count >1 ){
         int k =count /2;
@@ -33,13 +23,23 @@ void bitoninc+murge (a[] , int low ,int count ,int dir ){
         }
 
         bitonic_marge(a ,low    ,k ,dir );
-        bitonic_marge(a ,low +k ,k ,dir  )
+        bitonic_marge(a ,low +k ,k ,dir  );
     }
 
-    return 
+    
 }
 
+void bitonic_sort(int a[] , int low ,int count  ,int dir){
 
+    if(count >1){
+        int k =count/2;
+        bitonic_sort(a , low ,k ,1);
+        bitonic_sort(a ,low+k ,k ,0);
+
+        bitonic_marge(a ,low ,count ,dir);
+    }
+    
+}
 
 int main(){
 

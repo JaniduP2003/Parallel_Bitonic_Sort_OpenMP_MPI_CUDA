@@ -1,3 +1,10 @@
 /test/
 
+/.vscode/
+
+# Ignore everything in "Serial bitonic sort" folder
+/Serial bitonic sort/*
+
+# But allow .c files
+!/Serial bitonic sort/*.c
 
