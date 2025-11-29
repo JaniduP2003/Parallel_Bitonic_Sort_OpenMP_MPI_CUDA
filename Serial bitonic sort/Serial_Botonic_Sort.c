@@ -12,15 +12,29 @@ void bitonic_sort(int a[] , int low ,int count  ,int dir){
 
     if(n>1){
         k =count/2;
-        bitonic_sort(a[] , low ,k ,1);
-        bitonic_sort(a[] ,low+k ,k ,0);
+        bitonic_sort(a , low ,k ,1);
+        bitonic_sort(a ,low+k ,k ,0);
 
         bitonic_marge(a ,low ,count ,dir);
     }
     return
 }
 
-void bitoninc+murge (arr[] , ){
+void bitoninc+murge (a[] , int low ,int count ,int dir ){
+
+    if(count >1 ){
+        int k =count /2;
+
+        for (int i =low ; i <low+k ;i++){
+            if(( dir == 1  && a[i] > a[i+k] ) ||
+               ( dir == 0  && a[i] < a[i+k] )   ){
+                swap(a,i,i+k);
+               }
+        }
+
+        bitonic_marge(a ,low    ,k ,dir );
+        bitonic_marge(a ,low +k ,k ,dir  )
+    }
 
     return 
 }
