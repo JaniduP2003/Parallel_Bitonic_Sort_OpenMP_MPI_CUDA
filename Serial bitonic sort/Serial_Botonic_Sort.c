@@ -3,9 +3,9 @@
 
 
 void swap( int arr[] ,int i ,int j){
-    int temp = arr[j];
-    arr[j] =arr[i];
-    arr[j] =temp;
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
 }
 
 
@@ -49,9 +49,15 @@ int main(){
     for (int i =0 ; i <n ;i++){
         printf("%d" ,arr[i]);
     }
-    printf("/n");
+    printf("\n");
 
     bitonic_sort(arr ,0 ,n,1);
+
+    
+    for (int i =0 ; i <n ;i++){
+        printf("%d" ,arr[i]);
+    }
+    printf("\n");
 
 
     return 0;
