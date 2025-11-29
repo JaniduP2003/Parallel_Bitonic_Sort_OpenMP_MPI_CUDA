@@ -16,20 +16,11 @@ void make_arry( int a[] ,int n){
     }
 }
 
-void bitonic_sort( int a[] , int low , int count ,int dir){
-    if(count >1){
-        int k = count /2;
-        bitonic_sort(a,low   ,k ,1);
-        bitonic_sort(a,low+k ,k ,0);
-
-        bitonic_marge(a , low, count , dir);
-    }
-}
-
 void bitonic_marge( int a[] ,int low ,int count ,int dir ){
     if(count>1){
         int k =count/2;
 
+        #pragma omp parallel for 
         for(int i =low ; i<low+k ;i++){
             if(dir == 1 && a[i] > a[i+k] ||
                dir == 0 && a[i] < a[i+k]   ){
@@ -41,6 +32,31 @@ void bitonic_marge( int a[] ,int low ,int count ,int dir ){
     }
 }
 
+void bitonic_sort( int a[] , int low , int count ,int dir){
+    if(count >1){
+        int k = count /2;
+
+        #pragma omp parallel sections 
+
+            #pragma omp section {
+        
+                bitonic_sort(a,low   ,k ,1);
+
+            }
+
+            #pragma omp parrallel section {
+
+                 bitonic_sort(a,low+k ,k ,0);
+
+            }
+
+        bitonic_marge(a , low, count , dir);
+        
+    }
+}
+
+
+
 
 
 int main (){
@@ -48,16 +64,16 @@ int main (){
  int n = 65536;
  int *arr = (int* )malloc(n*sizeof(int));
  
- if(arr == NULL)[
+ if(arr == NULL){
     printf("memeory alocation failed ");
     return 1;
- ]
- 
+}
+
  void make_arry(arr , n);
 
  void bitonic_sort(arr , 0 , n ,1 );
 
 
-
+    free(arr);
     return 0;
 }
