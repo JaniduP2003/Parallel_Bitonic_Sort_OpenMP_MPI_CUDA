@@ -32,21 +32,28 @@ void bitonic_marge( int a[] ,int low ,int count ,int dir ){
     }
 }
 
-void bitonic_sort( int a[] , int low , int count ,int dir){
+void bitonic_sort_recursive( int a[] , int low , int count ,int dir){
     if(count >1){
         int k = count /2;
 
         #pragma omp task shared(a)
-        bitonic_sort(a,low   ,k ,1);
+        bitonic_sort_recursive(a,low   ,k ,1);
 
         #pragma omp task shared(a)
-        bitonic_sort(a,low+k ,k ,0);
+        bitonic_sort_recursive(a,low+k ,k ,0);
         
         #pragma omp taskwait 
         bitonic_marge(a , low, count , dir);    
     }
-}
+}   //you jest cant add OMP TASK without omp parral for you need a wrapper
 
+void bitonic_sort(int a[] , int low , int count ,int dir ){
+    #pragma omp parallel 
+    {
+        #pragma omp single 
+        bitonic_sort_recursive( a , low , count , dir);
+    }
+} 
 //Why is shared(a) there? becose 
 //all the sorting ahappens in the SAME ARRRY
 //#pragma omp taskwait — “Wait until both tasks finish”
@@ -71,12 +78,12 @@ int main (){
  }
  printf("\n");
 
- clock_t start =clock();
+ double start = omp_get_wtime();
  bitonic_sort(arr , 0 , n ,1 );
- clock_t end =clock();
+ double end = omp_get_wtime();
 
-double clock_dif = ((double)(end - start)) / CLOCKS_PER_SEC;
- printf(" rime taken for comutation of sorted arry : %.6f sec" ,clock_dif);
+ double clock_dif = end - start;
+ printf("time taken for computation of sorted arry : %.6f sec\n" ,clock_dif);
 
 printf("after sorting ");
 for(int i =0 ;i <200 ;i++){
