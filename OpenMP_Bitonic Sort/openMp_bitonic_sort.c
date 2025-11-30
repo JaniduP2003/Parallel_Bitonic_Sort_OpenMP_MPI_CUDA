@@ -36,19 +36,23 @@ void bitonic_sort( int a[] , int low , int count ,int dir){
     if(count >1){
         int k = count /2;
 
-        #pragma omp parallel sections 
+         #pragma omp parallel sections 
+        {
 
-            #pragma omp section {
+             #pragma omp section 
+             {
         
                 bitonic_sort(a,low   ,k ,1);
 
             }
 
-            #pragma omp parrallel section {
+             #pragma omp section 
+             {
 
                  bitonic_sort(a,low+k ,k ,0);
 
             }
+        }
 
         bitonic_marge(a , low, count , dir);
         
@@ -69,9 +73,8 @@ int main (){
     return 1;
 }
 
- void make_arry(arr , n);
-
- void bitonic_sort(arr , 0 , n ,1 );
+ make_arry(arr , n);
+ bitonic_sort(arr , 0 , n ,1 );
 
 
     free(arr);

@@ -8,3 +8,22 @@
 # But allow .c files
 !/Serial bitonic sort/*.c
 
+# Ignore everything in "Serial bitonic sort" folder
+/OpenMP_Bitonic Sort/*
+
+# But allow .c files
+!/OpenMP_Bitonic Sort/*.c
+
+
+
+# Ignore everything in "Serial bitonic sort" folder
+/MPI parallel bitonic sort/*
+
+# But allow .c files
+!/MPI parallel bitonic sort/*.c
+
+# Ignore everything in "Serial bitonic sort" folder
+/CUDA bitonic sort for int arrays/*
+
+# But allow .c files
+!/CUDA bitonic sort for int arrays/*.c
