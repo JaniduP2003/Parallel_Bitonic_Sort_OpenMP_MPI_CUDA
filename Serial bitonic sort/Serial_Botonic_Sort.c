@@ -56,12 +56,14 @@ int main(){
 
     if(arr ==NULL){
         printf("memeory alocation failed ");
+        return 1;
     }
 
+    srand(time(NULL));
     make_arry( arr , n);
 
     printf("Before sorting (first 20 elements):\n");
-    for (int i =0 ; i <20 ;i++){
+    for (int i =0 ; i <200 ;i++){
         printf("%d " ,arr[i]);
     }
     printf("\n\n");
@@ -74,7 +76,7 @@ int main(){
     printf("time it took to mkae the caclulations : %.6f sec\n",time_taken);
     
      printf("After sorting (first 20 elements):\n");
-    for (int i =0 ; i <20 ;i++){
+    for (int i =0 ; i <200 ;i++){
         printf("%d " ,arr[i]);
     }
     printf("\n");
