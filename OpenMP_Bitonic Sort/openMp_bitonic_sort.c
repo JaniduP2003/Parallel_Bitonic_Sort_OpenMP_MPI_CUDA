@@ -36,31 +36,20 @@ void bitonic_sort( int a[] , int low , int count ,int dir){
     if(count >1){
         int k = count /2;
 
-         #pragma omp parallel sections 
-        {
+        #pragma omp task shared(a)
+        bitonic_sort(a,low   ,k ,1);
 
-             #pragma omp section 
-             {
+        #pragma omp task shared(a)
+        bitonic_sort(a,low+k ,k ,0);
         
-                bitonic_sort(a,low   ,k ,1);
-
-            }
-
-             #pragma omp section 
-             {
-
-                 bitonic_sort(a,low+k ,k ,0);
-
-            }
-        }
-
-        bitonic_marge(a , low, count , dir);
-        
+        #pragma omp taskwait 
+        bitonic_marge(a , low, count , dir);    
     }
 }
 
-
-
+//Why is shared(a) there? becose 
+//all the sorting ahappens in the SAME ARRRY
+//#pragma omp taskwait — “Wait until both tasks finish”
 
 
 int main (){
