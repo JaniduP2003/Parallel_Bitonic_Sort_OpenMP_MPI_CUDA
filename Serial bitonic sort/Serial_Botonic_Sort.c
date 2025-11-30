@@ -51,7 +51,7 @@ int main(){
     // int arr[] = {3,7,4,8,6,2,1,5};
     // int n = sizeof(arr)/sizeof(arr[0]);
 
-    int n = 65536;
+    int n =8388608;
     int *arr =(int*)malloc(n*sizeof(int));
 
     if(arr ==NULL){
@@ -63,7 +63,7 @@ int main(){
     make_arry( arr , n);
 
     printf("Before sorting (first 20 elements):\n");
-    for (int i =0 ; i <200 ;i++){
+    for (int i =0 ; i <400 ;i++){
         printf("%d " ,arr[i]);
     }
     printf("\n\n");
@@ -76,7 +76,7 @@ int main(){
     printf("time it took to mkae the caclulations : %.6f sec\n",time_taken);
     
      printf("After sorting (first 20 elements):\n");
-    for (int i =0 ; i <200 ;i++){
+    for (int i =0 ; i <100000 ;i++){
         printf("%d " ,arr[i]);
     }
     printf("\n");
@@ -87,3 +87,7 @@ int main(){
 
 
 // gcc Serial_Botonic_Sort.c -o Serial_Botonic_Sort && ./Serial_Botonic_Sort
+
+
+//2^26 = 67108864 when go this out put the fost are 4000 or so are 0 so dont 
+//need to warry the code is not broken  not stack overflow 
