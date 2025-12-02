@@ -58,7 +58,8 @@ int main( int argc , char** argv){
     MPI_Comm_rank(MPI_COMM_WORLD , &rank);
     MPI_Comm_size(MPI_COMM_WORLD , &numproc);
 
-    int n =8388608;
+    // int n =8388608;
+     int n =16;
 
     int chank = n /numproc;
 
@@ -128,7 +129,7 @@ int main( int argc , char** argv){
    //slider to go 2,4,8,16
    for(int size = 2; size <= numproc ;size <<=1){
     //add the diraction to local_bufferd arrys
-    int groupDir = ((size & rank ) == 0);
+    int groupDir = ((rank & size ) == 0);
 
     for (int step = size >>1 ;step >0 ;step >>= 1){
         int partner = rank ^ step ;
@@ -148,19 +149,22 @@ int main( int argc , char** argv){
                     );
 
          // now in each local_arry <=> resive_arry compair them 
-        if(groupDir ==1 ){
-            for(int i = 0 ; i< chank ;i++)
-                if(local_buffer[i] > recv_bufer[i]) local_buffer[i] = recv_bufer[i];
-        }else {
-        for(int i = 0 ; i< chank ; i++)
-                if( local_buffer[i]< recv_bufer[i]) local_buffer[i] = recv_bufer[i];
-         }
-
-     }
+            if((rank < partner && groupDir == 1) || (rank > partner && groupDir == 0)){
+                // Keep SMALLER values
+                for(int i = 0; i < chank; i++)
+                    if(local_buffer[i] > recv_buffer[i]) 
+                        local_buffer[i] = recv_buffer[i];
+            } else {
+                // Keep LARGER values
+                for(int i = 0; i < chank; i++)
+                    if(local_buffer[i] < recv_buffer[i]) 
+                        local_buffer[i] = recv_buffer[i];
+            }
+        }
 
    }
 
-   MPI_Gather(local_buffer.
+   MPI_Gather(local_buffer,
               chank,
               MPI_INT,
               arr,
@@ -173,7 +177,7 @@ int main( int argc , char** argv){
 
    if(rank == 0 ){
     printf("sorted arry :\n");
-        for(int i=0 ; i<100 ;i++)
+        for(int i=0 ; i<17 ;i++)
             printf("%d " ,arr[i]);
     printf("\n");
         
@@ -228,3 +232,19 @@ int main( int argc , char** argv){
 // Iteration 4: step = 1 >> 1 = 0  ✗ (0 is not > 0, STOP)
 
 // Result: step goes through: 4, 2, 1
+
+
+//HOW TO RUN
+// > mpicc MPI_bitonic_Sort.c -o MPI_bitonic_Sort
+
+// # Run with 2 processes
+//mpirun -np 2 ./MPI_bitonic_Sort
+
+// # Run with 4 processes
+// mpirun -np 4 ./MPI_bitonic_Sort
+
+// # Run with 8 processes
+// mpirun -np 8 ./MPI_bitonic_Sort
+
+// # Run with 16 processes (if you have enough cores)
+// mpirun -np 16 ./MPI_bitonic_Sort
