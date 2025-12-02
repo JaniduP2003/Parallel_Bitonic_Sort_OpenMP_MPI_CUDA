@@ -121,15 +121,40 @@ int main(){
    //place to keep the sorted parts in local arrry
    int *recv_bufer =malloc( chank * sizeof(int));
 
- // now in each local_arry <=> resive_arry compair them 
-   if(gorupDir ==1 ){
-    for(int i = 0 ; i< chank ;i++)
-        if(local_buffer[i] > recv_bufer[i]) local_buffer[i] = recv_bufer[i];
-   }else {
-   for(int i = 0 ; i< chank ; i++)
-        if( local_buffer[i]< recv_bufer[i]) local_buffer[i] = recv_bufer[i];
-   }
+   //slider to go 2,4,8,16
+   for(int size = 2; size <= numproc ;size <<=1){
+    //add the diraction to local_bufferd arrys
+    int groupDir = ((size & rank ) == 0);
 
+    for (int step = size >>1 ;step >0 ;step >>= 1){
+        int partner = rank ^ step ;
+
+        MPI_Sendrecv( local_buffer ,
+                      chank,
+                      MPI_INT,
+                      partner,
+                      0,
+                      recv_buffer,
+                      chank,
+                      MPI_INT,
+                      partner,
+                      0,
+                      MPI_COMM_WORLD,
+                      MPI_STATUS_IGNORE
+                    );
+
+         // now in each local_arry <=> resive_arry compair them 
+        if(gorupDir ==1 ){
+            for(int i = 0 ; i< chank ;i++)
+                if(local_buffer[i] > recv_bufer[i]) local_buffer[i] = recv_bufer[i];
+        }else {
+        for(int i = 0 ; i< chank ; i++)
+                if( local_buffer[i]< recv_bufer[i]) local_buffer[i] = recv_bufer[i];
+         }
+
+     }
+
+   }
 
    MPI_gather(local_buffer.
               chank,
@@ -141,27 +166,22 @@ int main(){
             );
 
 
-    printf("Before sorting (first 20 elements):\n");
-    for (int i =0 ; i <400 ;i++){
-        printf("%d " ,arr[i]);
-    }
-    printf("\n\n");
-
-    clock_t start =clock();
-    bitonic_sort(arr ,0 ,n,1);
-    clock_t end =clock();
-
-    double time_taken = ((double)end-(double)start )/CLOCKS_PER_SEC;
-    printf("time it took to mkae the caclulations : %.6f sec\n",time_taken);
-    
-     printf("After sorting (first 20 elements):\n");
-    for (int i =0 ; i <100000 ;i++){
-        printf("%d " ,arr[i]);
-    }
+   if(rank == 0 ){
+    printf("sorted arry :\n");
+        for(int i=0 ; i<100 ;i++)
+            printf("%d " ,arr[i]);
     printf("\n");
+        
+   }
 
-    free(arr);
-    return 0;
+   free(local_buffer);
+   free(recv_buffer);
+
+   if(rank == 0) free(arr);
+
+   MPI_Finalize();
+   return 0;
+
 }
 
 
@@ -192,3 +212,13 @@ int main(){
 //   rank & size = 001 & 010 = 000 (= 0)
 //   (0 == 0) → True → 1
 //   groupDir = 1 (ascending ↑)
+
+// thos code slider for (int step = size >> 1; step > 0; step >>= 1) {
+// step = size >> 1 = 8 >> 1 = 4
+
+// Iteration 1: step = 4  ✓ (4 > 0, continue)
+// Iteration 2: step = 4 >> 1 = 2  ✓ (2 > 0, continue)
+// Iteration 3: step = 2 >> 1 = 1  ✓ (1 > 0, continue)
+// Iteration 4: step = 1 >> 1 = 0  ✗ (0 is not > 0, STOP)
+
+// Result: step goes through: 4, 2, 1
