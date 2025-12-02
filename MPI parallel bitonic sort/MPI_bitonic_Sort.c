@@ -59,7 +59,8 @@ int main( int argc , char** argv){
     MPI_Comm_size(MPI_COMM_WORLD , &numproc);
 
     // int n =8388608;
-     int n =16;
+    // int n =16;
+       int n = 8192;
 
     int chank = n /numproc;
 
@@ -180,6 +181,10 @@ int main( int argc , char** argv){
 
    }
 
+   if(rank != 0){
+       arr = malloc(n * sizeof(int));
+   }
+
    MPI_Gather(local_buffer,
               chank,
               MPI_INT,
@@ -194,7 +199,7 @@ int main( int argc , char** argv){
    if(rank == 0 ){
    bitonic_sort(arr , 0 , n , 1);
     printf("sorted arry :\n");
-        for(int i=0 ; i<n ;i++)
+        for(int i=0 ; i<7024 ;i++)
             printf("%d " ,arr[i]);
     printf("\n");
         
@@ -203,7 +208,7 @@ int main( int argc , char** argv){
    free(local_buffer);
    free(recv_buffer);
 
-   if(rank == 0) free(arr); // in the begiing we give mmeory to the arr in rank 0
+   free(arr); // in the begiing we give mmeory to the arr in rank 0
    //now no need for the memeory so free the rank 0 so NO MEMEORY LEEK 
 
    MPI_Finalize();
