@@ -90,7 +90,21 @@ int main(){
 
     //now need to sactter the main big arry
     //the scatterd parts can be sored in locak_buffer arry i created 
-    //each broken part must be sorted (per chank only sort )
+    //each broken part must be sorted (per chank only sort ) | bitonic sort();
+    //now each part is in asccending oder 
+        //# problem : thes wrong need to be in bitionc seq to be sorted so need a way to 
+        // organize this each accending parts up up up up to
+        // up down up down up 
+        //how :::???? 
+        // to do this sue XOR | (rank & size) == 0 if its 00 then up if 10 then down 
+    //now you have groupes
+    //now pari them and compair 
+    //need a way to pair teh groupes to work to gether???
+    //how ::: ????
+    //when you exange the arry DONT OVERRIDE THE LOCAL_BUFFER add the resived one to
+    // RESIVE_BUFFER
+    // now in each local_arry <=> resive_arry compair them 
+    // add the reuslt to the local buffer 
 
     srand(time(NULL));
     make_arry( arr , n);
