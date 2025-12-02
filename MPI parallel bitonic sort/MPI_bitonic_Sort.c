@@ -62,12 +62,35 @@ int main(){
 
     int chank = n /numproc;
 
-    int *arr =(int*)malloc(n*sizeof(int));
+    int *arr =NULL; //good practice in C to make this NULL
+
+
+
+    //Allocate memory | int *arr =(int*)malloc(n*sizeof(int));
+    // Seed the random number generator |  srand(time(NULL));
+    // then  Generate the random arry | make_arry(arr, n);
+    
+    // Only rank 0 does this, because: In MPI, you don't want every rank 
+    //if(rank == 0){  add evrythinh here }
+    //creating its own array—only one master array is needed.
+
+    if(rank == 0){
+        arr = malloc(n*sizeof(int));
+        srand(time(NULL));
+        make_arry(arr , n);
+    }
 
     if(arr ==NULL){
         printf("memeory alocation failed ");
         return 1;
     }
+
+    int local_buffer =malloc(chank * sizeof(int));
+    //why: chanck becose it is broken to the n/numberof proc thats the size of one part
+
+    //now need to sactter the main big arry
+    //the scatterd parts can be sored in locak_buffer arry i created 
+    //each broken part must be sorted (per chank only sort )
 
     srand(time(NULL));
     make_arry( arr , n);
