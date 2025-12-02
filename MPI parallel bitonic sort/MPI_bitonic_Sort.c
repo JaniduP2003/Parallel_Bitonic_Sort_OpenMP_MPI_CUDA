@@ -47,15 +47,15 @@ void bitonic_sort(int a[] , int low ,int count  ,int dir){
     
 }
 
-int main(){
+int main( int argc , char** argv){
 
     // int arr[] = {3,7,4,8,6,2,1,5};
     // int n = sizeof(arr)/sizeof(arr[0]);
 
     MPI_Init(&argc, &argv);
 
-    int rank, numproc
-    MPI_comm_rank(MPI_COMM_WORLD , &rank);
+    int rank, numproc;
+    MPI_Comm_rank(MPI_COMM_WORLD , &rank);
     MPI_Comm_size(MPI_COMM_WORLD , &numproc);
 
     int n =8388608;
@@ -76,16 +76,17 @@ int main(){
 
     if(rank == 0){
         arr = malloc(n*sizeof(int));
+        if(arr == NULL){ 
+            printf("memory allocation failed\n");
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
         srand(time(NULL));
         make_arry(arr , n);
     }
 
-    if(arr ==NULL){
-        printf("memeory alocation failed ");
-        return 1;
-    }
+    
 
-    int local_buffer =malloc(chank * sizeof(int));
+    int *local_buffer =malloc(chank * sizeof(int));
     //why: chanck becose it is broken to the n/numberof proc thats the size of one part
 
     //now need to sactter the main big arry
@@ -113,13 +114,16 @@ int main(){
     MPI_Scatter(arr,
                 chank,
                 MPI_INT,
+                local_buffer,
+                chank,
+                MPI_INT,
                 0,
                 MPI_COMM_WORLD);
     
    bitonic_sort( local_buffer , 0 ,chank , 1);
 
    //place to keep the sorted parts in local arrry
-   int *recv_bufer =malloc( chank * sizeof(int));
+   int *recv_buffer =malloc( chank * sizeof(int));
 
    //slider to go 2,4,8,16
    for(int size = 2; size <= numproc ;size <<=1){
@@ -144,7 +148,7 @@ int main(){
                     );
 
          // now in each local_arry <=> resive_arry compair them 
-        if(gorupDir ==1 ){
+        if(groupDir ==1 ){
             for(int i = 0 ; i< chank ;i++)
                 if(local_buffer[i] > recv_bufer[i]) local_buffer[i] = recv_bufer[i];
         }else {
@@ -156,10 +160,11 @@ int main(){
 
    }
 
-   MPI_gather(local_buffer.
+   MPI_Gather(local_buffer.
               chank,
               MPI_INT,
               arr,
+              chank,
               MPI_INT,
               0,
               MPI_COMM_WORLD
@@ -177,7 +182,8 @@ int main(){
    free(local_buffer);
    free(recv_buffer);
 
-   if(rank == 0) free(arr);
+   if(rank == 0) free(arr); // in the begiing we give mmeory to the arr in rank 0
+   //now no need for the memeory so free the rank 0 so NO MEMEORY LEEK 
 
    MPI_Finalize();
    return 0;
