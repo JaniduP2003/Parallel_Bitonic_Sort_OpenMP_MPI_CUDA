@@ -106,6 +106,9 @@ int main(){
     // now in each local_arry <=> resive_arry compair them 
     // add the reuslt to the local buffer 
 
+    //Right Shift (>> 1) → Divide by 2
+    //Left Shift (<< 1) → Multiply by 2
+
     //scahter func 
     MPI_Scatter(arr,
                 chank,
@@ -167,3 +170,25 @@ int main(){
 
 //2^26 = 67108864 when go this out put the fost are 4000 or so are 0 so dont 
 //need to warry the code is not broken  not stack overflow 
+
+
+//  //  // ((rank & size) == 0) this works like below
+// rank = 2  (binary: 010)
+// size = 2  (binary: 010)
+//          &  (bitwise AND)
+//          ─────────────
+// Result:      010  (= 2 in decimal)
+
+// (2 == 0)  // Is 2 equal to 0?
+// → False   // NO! 
+// → 0       // In C, false = 0
+
+// Rank 0:
+//   rank & size = 000 & 010 = 000 (= 0)
+//   (0 == 0) → True → 1
+//   groupDir = 1 (ascending ↑)
+
+// Rank 1:
+//   rank & size = 001 & 010 = 000 (= 0)
+//   (0 == 0) → True → 1
+//   groupDir = 1 (ascending ↑)
