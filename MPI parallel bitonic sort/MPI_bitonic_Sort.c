@@ -149,17 +149,25 @@ int main( int argc , char** argv){
                     );
 
          // now in each local_arry <=> resive_arry compair them 
-            if((rank < partner && groupDir == 1) || (rank > partner && groupDir == 0)){
-                // Keep SMALLER values
-                for(int i = 0; i < chank; i++)
-                    if(local_buffer[i] > recv_buffer[i]) 
-                        local_buffer[i] = recv_buffer[i];
-            } else {
-                // Keep LARGER values
-                for(int i = 0; i < chank; i++)
-                    if(local_buffer[i] < recv_buffer[i]) 
-                        local_buffer[i] = recv_buffer[i];
+            int keepSmall = ((rank < partner && groupDir == 1) || (rank > partner && groupDir == 0));
+            for(int i = 0; i < chank; i++){
+                int j = chank - 1 - i; // mirror index for proper bitonic compare-exchange
+                if(keepSmall){
+                    if(local_buffer[i] > recv_buffer[j]){
+                        int temp = local_buffer[i];
+                        local_buffer[i] = recv_buffer[j];
+                        recv_buffer[j] = temp;
+                    }
+                } else {
+                    if(local_buffer[i] < recv_buffer[j]){
+                        int temp = local_buffer[i];
+                        local_buffer[i] = recv_buffer[j];
+                        recv_buffer[j] = temp;
+                    }
+                }
             }
+            
+            bitonic_marge(local_buffer, 0, chank, keepSmall ? 1 : 0);
         }
 
    }
@@ -177,7 +185,7 @@ int main( int argc , char** argv){
 
    if(rank == 0 ){
     printf("sorted arry :\n");
-        for(int i=0 ; i<17 ;i++)
+        for(int i=0 ; i<n ;i++)
             printf("%d " ,arr[i]);
     printf("\n");
         
