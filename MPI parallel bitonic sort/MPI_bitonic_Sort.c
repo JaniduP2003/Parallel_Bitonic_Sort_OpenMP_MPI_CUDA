@@ -106,8 +106,37 @@ int main(){
     // now in each local_arry <=> resive_arry compair them 
     // add the reuslt to the local buffer 
 
-    srand(time(NULL));
-    make_arry( arr , n);
+    //scahter func 
+    MPI_Scatter(arr,
+                chank,
+                MPI_INT,
+                0,
+                MPI_COMM_WORLD);
+    
+   bitonic_sort( local_buffer , 0 ,chank , 1);
+
+   //place to keep the sorted parts in local arrry
+   int *recv_bufer =malloc( chank * sizeof(int));
+
+ // now in each local_arry <=> resive_arry compair them 
+   if(gorupDir ==1 ){
+    for(int i = 0 ; i< chank ;i++)
+        if(local_buffer[i] > recv_bufer[i]) local_buffer[i] = recv_bufer[i];
+   }else {
+   for(int i = 0 ; i< chank ; i++)
+        if( local_buffer[i]< recv_bufer[i]) local_buffer[i] = recv_bufer[i];
+   }
+
+
+   MPI_gather(local_buffer.
+              chank,
+              MPI_INT,
+              arr,
+              MPI_INT,
+              0,
+              MPI_COMM_WORLD
+            );
+
 
     printf("Before sorting (first 20 elements):\n");
     for (int i =0 ; i <400 ;i++){
