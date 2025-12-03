@@ -26,4 +26,4 @@
 /CUDA bitonic sort for int arrays/*
 
 # But allow .c files
-!/CUDA bitonic sort for int arrays/*.c
+!/CUDA bitonic sort for int arrays/*.cu
