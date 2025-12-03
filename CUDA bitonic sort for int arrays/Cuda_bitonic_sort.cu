@@ -14,9 +14,28 @@ void make_arry( int a[] , int num ){
 
 __global__ void bitonic_marge_kernel(int arr , int n , int  j ,int k){
 
+    //need a way to add the global index uniqe
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    //need the XOR gate to find out of accending or decensding
+    int ixj = i^ j;
+
+    //the code do the marging (with swap)
+
 }
 
 void bitonic_sort_cuda(int *d_arr , int n ){
+
+    int threads =256;
+    int blocks = (n+ threads -1)/ threads;
+
+    // k = 2,4,8,16,...,n need to go liek this 1st k is 2 then j must be 1 
+    for(int k =2 ; k<=n ; k *=2){
+        // // j = k/2, k/4, k/8, ..., 1 make like this
+        for(int j = k/2 ; j> 0; j /=2){
+            //need to magre the parires up up 
+        }
+
+        }
 
 }
 
