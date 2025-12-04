@@ -240,40 +240,195 @@ nvcc -o bitonic_cuda bitonic_sort_cuda.cu -O3
 
 ## 📊 Performance Evaluation
 
-### Metrics to Measure
+All implementations were evaluated on a problem size of **8,388,608 elements** (2^23) to assess their parallel efficiency and scalability.
 
-1. **Execution Time**: Time taken to sort the array
-2. **Speedup**: Serial time / Parallel time
-3. **Efficiency**: Speedup / Number of processors
-4. **Scalability**: Performance with increasing problem size
+---
 
-### Test Configurations
+### 📈 Combined Analysis
 
-#### OpenMP Testing
-- Thread counts: 1, 2, 4, 8, 16
-- Array sizes: 2^16, 2^18, 2^20, 2^22
-- Graphs required:
-  - Threads vs Execution Time
-  - Threads vs Speedup
+![Combined Performance Analysis](combined_performance_analysis.png)
 
-#### MPI Testing
-- Process counts: 1, 2, 4, 8, 16
-- Array sizes: 2^16, 2^18, 2^20, 2^22
-- Graphs required:
-  - Processes vs Execution Time
-  - Processes vs Speedup
+#### Execution Time Comparison
 
-#### CUDA Testing
-- Block sizes: 64, 128, 256, 512, 1024
-- Array sizes: 2^16, 2^18, 2^20, 2^22
-- Graphs required:
-  - Configuration vs Execution Time
-  - Configuration vs Speedup
+Order from **slowest → fastest**:
 
-#### Comparative Analysis
-- Compare all three implementations on same dataset
-- Identify best-performing approach
-- Analyze strengths and weaknesses
+1. **CPU (Serial)**: 80 seconds
+2. **OpenMP (8 threads)**: 24 seconds
+3. **MPI (8 processes)**: 0.84 seconds
+4. **CUDA (256 threads/block)**: 0.10 seconds
+
+#### Speedup Comparison
+
+Order from **weakest → strongest**:
+
+1. **CPU**: 1× (baseline)
+2. **OpenMP**: 3.33×
+3. **MPI**: 6.75× over MPI baseline; **94.8× over CPU**
+4. **CUDA**: **776.4×**
+
+---
+
+### 🔍 Detailed Method Summaries
+
+#### 3.1 CPU (Sequential)
+
+- Serves as the baseline for all comparisons
+- Long execution time (80 seconds) due to strictly serial execution
+- No parallelism; all comparisons and swaps happen on one core
+- Demonstrates the need for parallelization on large datasets
+
+---
+
+### 🧵 OpenMP Performance Analysis
+
+![OpenMP Performance Analysis](openmp_performance_analysis.png)
+
+| Threads | Time (sec) | Speedup |
+|---------|-----------|---------|
+| 1       | 80.29     | 1.00×   |
+| 2       | 41.46     | 1.94×   |
+| 4       | 35.55     | 2.26×   |
+| 8       | 24.11     | 3.33×   |
+
+#### Interpretation
+
+The OpenMP implementation of bitonic sort was evaluated using 1, 2, 4, and 8 threads. The performance scaled significantly with increasing thread count, but—as expected for a synchronization-heavy algorithm like bitonic sort—the speedup was sub-linear.
+
+Using a single thread, the execution time was **80.29 seconds**, serving as the baseline. Increasing to 2 threads nearly halved the runtime, achieving a **1.94× speedup**. At 4 threads, performance improved further but with diminishing returns, reaching a **2.26× speedup**. The best performance was obtained with 8 threads, completing the execution in **24.11 seconds**, corresponding to a **3.33× speedup**.
+
+**Key Observations:**
+- Good speedup, but limited due to:
+  - **Shared memory contention** between threads
+  - **Synchronization barriers** at every stage
+  - **Cache thrashing** from concurrent memory access
+- Bitonic sort requires many stages → synchronization at every step reduces scalability
+- OpenMP helps greatly but is limited by the algorithm's barrier-heavy nature
+
+The deviation from ideal linear speedup arises from thread synchronization, memory bandwidth limits, and the inherent structure of bitonic sort, which requires frequent inter-thread communication. Overall, the OpenMP version demonstrates good multicore parallel scaling, with clear benefits observed up to 8 threads.
+
+---
+
+### 🌐 MPI Performance Analysis
+
+![MPI Performance Analysis](mpi_performance_analysis.png)
+
+| Processes | Time (sec) | Speedup |
+|-----------|-----------|---------|
+| 1         | 5.72      | 1.00×   |
+| 2         | 2.38      | 2.40×   |
+| 4         | 1.14      | 5.02×   |
+| 8         | 0.85      | 6.75×   |
+
+#### Interpretation
+
+The MPI implementation of bitonic sort was evaluated using 1, 2, 4, and 8 processes. The results demonstrate **strong parallel scalability**, especially at lower process counts, where communication overhead is relatively small compared to computation.
+
+With a single process, the runtime was **5.72 seconds**, serving as the baseline. Increasing to 2 processes reduced the time to **2.38 seconds**, corresponding to a **2.40× speedup**, already slightly better than ideal scaling due to improved cache utilization. At 4 processes, performance improved dramatically to **1.14 seconds**, achieving a **5.02× speedup**.
+
+Using 8 processes, the runtime reached **0.85 seconds**, with a **6.75× speedup** over the baseline. While this is a substantial improvement, it shows the expected sub-linear behavior: communication, synchronization, and data exchange overhead become more dominant as the number of processes grows.
+
+**Key Observations:**
+- **Much faster than OpenMP** beyond 4 workers
+- **Distributed memory** reduces cache conflicts
+- Each process handles a chunk of data independently
+- Communication cost appears mainly at higher process counts
+- MPI is very efficient for data-decomposable problems like bitonic merging
+
+Overall, the MPI version shows **excellent scalability** and **outperforms the OpenMP version** at the same thread/process counts, especially after 4 processes. This indicates that the distributed memory decomposition aligns well with bitonic sort's communication pattern.
+
+---
+
+### 🚀 CUDA Performance Analysis
+
+![CUDA Performance Analysis](cuda_performance_analysis.png)
+
+**Test Configuration:** NVIDIA RTX 4050 GPU, 8,388,608 elements
+
+| Threads/block | Blocks  | Time (sec) | Time (ms) | Speedup |
+|--------------|---------|-----------|-----------|---------|
+| 32           | 262144  | 0.235135  | 235.135   | 1.00×   |
+| 64           | 131072  | 0.121118  | 121.118   | 1.94×   |
+| 128          | 65536   | 0.115121  | 115.121   | 2.04×   |
+| **256**      | **32768**   | **0.103406**  | **103.406**   | **2.27× (fastest)** |
+| 512          | 16384   | 0.112963  | 112.963   | 2.08×   |
+| 1024         | 8192    | 0.129649  | 129.649   | 1.81×   |
+
+#### Interpretation
+
+The bitonic sort kernel was evaluated on an NVIDIA RTX 4050 GPU with a problem size of 8,388,608 elements. The configuration parameters varied were threads per block and the corresponding number of blocks, computed as n / threads.
+
+The execution time decreased significantly as the number of threads per block increased from 32 to 256, indicating improved occupancy and better utilization of the GPU's SMs. The **best performance was observed at 256 threads/block**, achieving a runtime of **0.103406 seconds**, which corresponds to a **2.27× speedup** relative to the baseline (32 threads/block).
+
+Performance began to degrade when increasing to 512 and 1024 threads per block. This is expected because larger block sizes reduce the number of resident blocks per SM, lowering occupancy and increasing register pressure. The GPU is unable to hide memory latency as effectively at the highest block sizes.
+
+**Key Observations:**
+- **Peak performance at 256 threads/block**
+- At 512 and 1024:
+  - GPU occupancy decreases
+  - Fewer blocks fit per SM
+  - Memory latency hiding becomes less effective
+- GPU massively outperforms CPU, OpenMP, and MPI
+- Bitonic sort matches GPU's SIMD-like structure
+
+Overall, the results show a classic GPU optimization pattern: performance improves with increasing threads per block up to an optimal point (256), after which further increases reduce efficiency.
+
+**CUDA dominates because the algorithm is:**
+- Massively parallel
+- Predictable
+- Memory-access regular
+- Easily mapped to warp-level operations
+
+---
+
+### 🏆 Final Conclusions
+
+#### 1. Shared Memory Parallelism (OpenMP) Provides Moderate Speedup
+
+OpenMP helps greatly but is limited by:
+- Synchronization overhead
+- Memory contention
+- Diminishing returns at 8+ threads
+
+Bitonic sort is barrier-heavy, and OpenMP suffers from that.
+
+#### 2. Distributed Memory (MPI) Provides Strong Scalability
+
+MPI outperforms OpenMP because:
+- Each process works independently on its local memory
+- Communication happens mainly during merge phases
+- Less shared-memory contention
+
+**MPI is ideal for bitonic sort on multi-node clusters.**
+
+#### 3. GPU Execution (CUDA) Is the Fastest by Far
+
+CUDA's performance is unmatched because:
+- Thousands of lightweight cores
+- Massive data parallelism
+- Coalesced memory access
+- High occupancy at 256 threads/block
+
+**CUDA turns the inherently parallel nature of bitonic stages into pure computational throughput.**
+
+#### 4. Overall Hierarchy
+
+**From slowest to fastest:**
+```
+CPU → OpenMP → MPI → CUDA
+80s    24s      0.84s   0.10s
+```
+
+**From lowest to highest speedup:**
+```
+1× → 3.33× → 94.8× → 776.4×
+```
+
+**Key Takeaways:**
+- **CUDA is 8× faster than MPI**
+- **CUDA is 33× faster than OpenMP**
+- **CUDA is 776× faster than pure CPU**
+
+This demonstrates that bitonic sort is exceptionally well-suited for GPU acceleration, leveraging the massive parallelism available on modern GPUs to achieve extraordinary performance gains over traditional CPU-based approaches.
 
 ---
 
