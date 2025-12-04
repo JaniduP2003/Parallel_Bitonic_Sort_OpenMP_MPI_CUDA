@@ -58,9 +58,9 @@ int main( int argc , char** argv){
     MPI_Comm_rank(MPI_COMM_WORLD , &rank);
     MPI_Comm_size(MPI_COMM_WORLD , &numproc);
 
-    // int n =8388608;
+    int n =8388608;
     // int n =16;
-       int n = 8192;
+    //    int n = 8192;
 
     int chank = n /numproc;
 
@@ -113,7 +113,10 @@ int main( int argc , char** argv){
     //Left Shift (<< 1) → Multiply by 2
 
     //scahter func 
-    MPI_Scatter(arr,
+    
+   double start_time = MPI_Wtime();
+   
+   MPI_Scatter(arr,
                 chank,
                 MPI_INT,
                 local_buffer,
@@ -121,8 +124,6 @@ int main( int argc , char** argv){
                 MPI_INT,
                 0,
                 MPI_COMM_WORLD);
-    
-   double start_time = MPI_Wtime();
    
    bitonic_sort( local_buffer , 0 ,chank , 1);
 
@@ -197,6 +198,8 @@ int main( int argc , char** argv){
               MPI_COMM_WORLD
             );
 
+   double end_time = MPI_Wtime();
+   double elapsed_time = end_time - start_time;
 
    if(rank == 0 ){
    bitonic_sort(arr , 0 , n , 1);
@@ -204,9 +207,6 @@ int main( int argc , char** argv){
     //     for(int i=0 ; i<7024 ;i++)
     //         printf("%d " ,arr[i]);
     // printf("\n");
-   
-   double end_time = MPI_Wtime();
-   double elapsed_time = end_time - start_time;
    
    printf("%.6f\n", elapsed_time);
    

@@ -59,7 +59,7 @@ void bitonic_sort(int a[] , int low , int count ,int dir ){
 //#pragma omp taskwait — “Wait until both tasks finish”
 
 
-int main (){
+int main (int argc , char** argv){
 
  int n = 8388608;
  int *arr = (int* )malloc(n*sizeof(int));

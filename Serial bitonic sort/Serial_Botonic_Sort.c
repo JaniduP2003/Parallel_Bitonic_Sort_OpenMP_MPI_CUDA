@@ -62,24 +62,24 @@ int main(){
     srand(time(NULL));
     make_arry( arr , n);
 
-    printf("Before sorting (first 20 elements):\n");
-    for (int i =0 ; i <400 ;i++){
-        printf("%d " ,arr[i]);
-    }
-    printf("\n\n");
+    //printf("Before sorting (first 20 elements):\n");
+    //for (int i =0 ; i <400 ;i++){
+    //    printf("%d " ,arr[i]);
+    //}
+    //printf("\n\n");
 
     clock_t start =clock();
     bitonic_sort(arr ,0 ,n,1);
     clock_t end =clock();
 
     double time_taken = ((double)end-(double)start )/CLOCKS_PER_SEC;
-    printf("time it took to mkae the caclulations : %.6f sec\n",time_taken);
+    printf("%.6f\n",time_taken);
     
-     printf("After sorting (first 20 elements):\n");
-    for (int i =0 ; i <100000 ;i++){
-        printf("%d " ,arr[i]);
-    }
-    printf("\n");
+     //printf("After sorting (first 20 elements):\n");
+    //for (int i =0 ; i <100000 ;i++){
+    //    printf("%d " ,arr[i]);
+    //}
+    //printf("\n");
 
     free(arr);
     return 0;
