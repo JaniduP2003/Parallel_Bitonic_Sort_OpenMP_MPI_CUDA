@@ -8,11 +8,11 @@
 
 void make_arry( int a[] , int num ){
     for( int i =0 ; i<num ;i++){
-        a[i] = srand()%1000;
+        a[i] = rand()%1000;
     }
 }
 
-__global__ void bitonic_marge_kernel(int arr , int n , int  j ,int k){
+__global__ void bitonic_marge_kernel(int *arr , int n , int  j ,int k){
 
     //need a way to add the global index uniqe
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -27,7 +27,7 @@ __global__ void bitonic_marge_kernel(int arr , int n , int  j ,int k){
         if( i<n && ixj <n){
             //set derection up or down
             int accending = ((i & k) == 0 );
-            if ((ascending && arr[i] > arr[ixj]) || (!ascending && arr[i] < arr[ixj])){
+            if ((accending && arr[i] > arr[ixj]) || (!accending && arr[i] < arr[ixj])){
                 //swap
                 int temp = arr[i];
                 arr[i] = arr[ixj];
@@ -50,8 +50,8 @@ void bitonic_sort_cuda(int *d_arr , int n ){
         // // j = k/2, k/4, k/8, ..., 1 make like this
         for(int j = k/2 ; j> 0; j /=2){
             //need to magre the parires up up 
-            bitonic_marge_kernel<<<block, threads >>>(d_arr , n, j, k);
-            cudaDeciceSynchronize();
+            bitonic_marge_kernel<<<blocks, threads >>>(d_arr , n, j, k);
+            cudaDeviceSynchronize();
             }
 
         }
@@ -95,7 +95,7 @@ int main(){
     //add the time caclulations
     cudaEvent_t start, end;
     cudaEventCreate(&start);
-    cudaEvrnyCreate(&end);
+    cudaEventCreate(&end);
 
     cudaEventRecord(start);
 
@@ -121,8 +121,8 @@ int main(){
     //now needs to cleen up everything
     cudaFree(d_arr);
     //need to remove the events in gpu to 
-    cudaEventDestory(start);
-    cudaEventDestory(end);
+    cudaEventDestroy(start);
+    cudaEventDestroy(end);
 
     free(arr);
     return 0 ;
