@@ -17,8 +17,8 @@ SERIAL_EXECUTABLE = "./Serial bitonic sort/Serial_Botonic_Sort"
 OPENMP_EXECUTABLE = "./OpenMP_Bitonic Sort/openMp_bitonic_sort"
 MPI_EXECUTABLE = "./MPI parallel bitonic sort/MPI_bitonic_Sort"
 
-OPENMP_THREADS = [1, 2, 4, 8, 16]
-MPI_PROCESSES = [1, 2, 4, 8, 16]
+OPENMP_THREADS = [1, 2, 4, 8]
+MPI_PROCESSES = [1, 2, 4, 8]
 
 OUTPUT_DIR = "./evaluation_results"
 
@@ -140,7 +140,7 @@ def run_openmp(threads: int) -> float:
         raise ExecutionError(f"OpenMP execution failed with {threads} threads: {e}")
 
 
-def run_mpi(processes: int) -> float:
+def run_mpi(processes: int, use_oversubscribe: bool = False) -> float:
     """Run MPI version with specified number of processes"""
     print(f"\n→ Running MPI with {processes} processes...")
     
@@ -148,8 +148,14 @@ def run_mpi(processes: int) -> float:
         raise ExecutionError(f"MPI executable not found: {MPI_EXECUTABLE}")
     
     try:
+        # Build command with optional oversubscribe flag
+        cmd = ['mpirun', '-np', str(processes)]
+        if use_oversubscribe:
+            cmd.append('--oversubscribe')
+        cmd.append(MPI_EXECUTABLE)
+        
         result = subprocess.run(
-            ['mpirun', '-np', str(processes), MPI_EXECUTABLE],
+            cmd,
             capture_output=True,
             text=True,
             timeout=300,
