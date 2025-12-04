@@ -72,24 +72,24 @@ int main (){
  srand(time(NULL));
  make_arry(arr , n);
 
- printf("befor arry \n");
- for(int i =0 ;i<200 ;i++){
-    printf("%d ",arr[i]);
- }
- printf("\n");
+ //printf("befor arry \n");
+ //for(int i =0 ;i<200 ;i++){
+ //   printf("%d ",arr[i]);
+ //}
+ //printf("\n");
 
  double start = omp_get_wtime();
  bitonic_sort(arr , 0 , n ,1 );
  double end = omp_get_wtime();
 
  double clock_dif = end - start;
- printf("time taken for computation of sorted arry : %.6f sec\n" ,clock_dif);
+ printf("%.6f\n" ,clock_dif);
 
-printf("after sorting ");
-for(int i =0 ;i <200 ;i++){
-    printf("%d ",arr[i]);
-}
-printf("\n");
+//printf("after sorting ");
+//for(int i =0 ;i <200 ;i++){
+//    printf("%d ",arr[i]);
+//}
+//printf("\n");
 
     free(arr);
     return 0;

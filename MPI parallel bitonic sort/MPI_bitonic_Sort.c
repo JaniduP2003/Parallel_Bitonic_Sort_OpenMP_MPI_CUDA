@@ -122,6 +122,8 @@ int main( int argc , char** argv){
                 0,
                 MPI_COMM_WORLD);
     
+   double start_time = MPI_Wtime();
+   
    bitonic_sort( local_buffer , 0 ,chank , 1);
 
    //place to keep the sorted parts in local arrry
@@ -198,10 +200,20 @@ int main( int argc , char** argv){
 
    if(rank == 0 ){
    bitonic_sort(arr , 0 , n , 1);
-    printf("sorted arry :\n");
-        for(int i=0 ; i<7024 ;i++)
-            printf("%d " ,arr[i]);
-    printf("\n");
+    //  printf("sorted arry :\n");
+    //     for(int i=0 ; i<7024 ;i++)
+    //         printf("%d " ,arr[i]);
+    // printf("\n");
+   
+   double end_time = MPI_Wtime();
+   double elapsed_time = end_time - start_time;
+   
+   printf("%.6f\n", elapsed_time);
+   
+   //printf("sorted arry :\n");
+   //    for(int i=0 ; i<7024 ;i++)
+   //        printf("%d " ,arr[i]);
+   //printf("\n");
         
    }
 

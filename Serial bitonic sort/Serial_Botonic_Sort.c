@@ -91,3 +91,7 @@ int main(){
 
 //2^26 = 67108864 when go this out put the fost are 4000 or so are 0 so dont 
 //need to warry the code is not broken  not stack overflow 
+
+
+//> python3 -m venv venv
+// source venv/bin/activate
