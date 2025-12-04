@@ -27,3 +27,4 @@
 
 # But allow .c files
 !/CUDA bitonic sort for int arrays/*.cu
+!/CUDA bitonic sort for int arrays/*.md
