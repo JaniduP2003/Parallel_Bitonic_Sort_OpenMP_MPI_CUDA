@@ -27,11 +27,11 @@ __global__ void bitonic_marge_kernel(int arr , int n , int  j ,int k){
         if( i<n && ixj <n){
             //set derection up or down
             int accending = ((i & k) == 0 );
-            if (()){
+            if ((ascending && arr[i] > arr[ixj]) || (!ascending && arr[i] < arr[ixj])){
                 //swap
                 int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
+                arr[i] = arr[ixj];
+                arr[ixj] = temp;
             }
         }
     }
@@ -50,7 +50,9 @@ void bitonic_sort_cuda(int *d_arr , int n ){
         // // j = k/2, k/4, k/8, ..., 1 make like this
         for(int j = k/2 ; j> 0; j /=2){
             //need to magre the parires up up 
-        }
+            bitonic_marge_kernel<<<block, threads >>>(d_arr , n, j, k);
+            cudaDeciceSynchronize();
+            }
 
         }
 
