@@ -62,7 +62,9 @@ void bitonic_sort_cuda(int *d_arr , int n ){
 
 int main(){
 
-    int n = 16;
+    //int n = 16;
+    //int n =8388608;
+     int n = 524288;
     int *arr = (int*)malloc(n * sizeof(int));   //arr is made (this will be
                                              // filed with random values)
 
@@ -75,7 +77,7 @@ int main(){
     make_arry(arr , n);
 
     printf("before sorting :\n");
-    for(int i = 0 ; i<100 ;i++){
+    for(int i = 0 ; i<16 ;i++){
         printf("%d ",arr[i]);
     }
     printf("\n");
@@ -101,8 +103,12 @@ int main(){
 
     //add the code you nee to time
     //sorting code 
+    bitonic_sort_cuda(d_arr, n);
 
     cudaEventRecord(end);
+    
+    cudaEventSynchronize(end);
+    
     float milsec=0;
     cudaEventElapsedTime(&milsec, start ,end );
 
@@ -113,7 +119,7 @@ int main(){
 
     //print the reuslt
     printf("sorted arry:\n");
-    for(int i = 0 ;i<100 ;i++){
+    for(int i = 0 ;i<1600 ;i++){
         printf("%d " ,arr[i]);
     }
     printf("\n");
@@ -147,3 +153,7 @@ int main(){
 //     cudaEventSynchronize(stop);  ← Wait for GPU to finish
     
 //     cudaEventElapsedTime(&ms, start, stop);  ← Accurate GPU time! 
+
+
+
+// nvcc Cuda_bitonic_sort.cu -o Cuda_bitonic_sort &&  ./Cuda_bitonic_sort
