@@ -17,7 +17,24 @@ __global__ void bitonic_marge_kernel(int arr , int n , int  j ,int k){
     //need a way to add the global index uniqe
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     //need the XOR gate to find out of accending or decensding
-    int ixj = i^ j;
+    int ixj = i^ j; //find the index of the morrored pert to compair 
+    //i : 110 (6) | j : 010 (2) XOR : 100  -> 4 
+
+    //need to stop relationship is symmetric: so make a gard raill
+    if(ixj > i){
+        //must be udner the n and the ixk must be under n to 
+        //both must be true it must be xor must be in arry 
+        if( i<n && ixj <n){
+            //set derection up or down
+            int accending = ((i & k) == 0 );
+            if (()){
+                //swap
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
 
     //the code do the marging (with swap)
 
