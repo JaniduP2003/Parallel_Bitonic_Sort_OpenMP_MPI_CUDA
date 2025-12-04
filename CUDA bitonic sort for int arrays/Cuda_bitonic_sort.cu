@@ -42,7 +42,7 @@ __global__ void bitonic_marge_kernel(int *arr , int n , int  j ,int k){
 
 void bitonic_sort_cuda(int *d_arr , int n ){
 
-    int threads =256;
+    int threads =1024;
     int blocks = (n+ threads -1)/ threads;
 
     // k = 2,4,8,16,...,n need to go liek this 1st k is 2 then j must be 1 
@@ -63,8 +63,8 @@ void bitonic_sort_cuda(int *d_arr , int n ){
 int main(){
 
     //int n = 16;
-    //int n =8388608;
-     int n = 524288;
+    int n =8388608;
+    //int n = 524288;
     int *arr = (int*)malloc(n * sizeof(int));   //arr is made (this will be
                                              // filed with random values)
 
